@@ -1,4 +1,4 @@
-# Documentación de entidades del e‑commerce (para Git)
+# Documentación de entidades del e‑commerce
 
 > Cada atributo indica **por qué existe** (justificación de negocio) y, si es **FK**, se explica la **tabla de destino** y la **relación**.
 
