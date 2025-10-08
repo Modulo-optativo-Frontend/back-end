@@ -65,7 +65,7 @@ Tipos: `string`, `int`, `decimal`, `Date` (ISO 8601).
 | Atributo             | Tipo   | ¿Por qué existe? / Relación |
 |----------------------|--------|------------------------------|
 | **id_item**          | string | Identificador técnico de la línea; simplifica operaciones CRUD. |
-| **fk_id_carrito**    | string | **FK → Carrito(id_carrito)**. Relación **Carrito 1..N CarritoItem**. Agrupa líneas bajo un mismo carrito. |
+| **fk_id_carrito**    | string | **FK → Carrito(id_carrito)**. Agrupa líneas bajo un mismo carrito. |
 | **fk_id_producto**   | string | **FK → Producto(id_producto)**. Relación **CarritoItem N..1 Producto** que materializa **Carrito N..M Producto**. |
 | cantidad             | int    | Indica cuántas unidades del producto desea el usuario en esa línea. |
 
@@ -75,7 +75,7 @@ Tipos: `string`, `int`, `decimal`, `Date` (ISO 8601).
 | Atributo           | Tipo    | ¿Por qué existe? / Relación |
 |--------------------|---------|------------------------------|
 | **id_pedido**      | string  | Identificador del documento de venta; base para facturación y soporte. |
-| **fk_id_usuario**  | string  | **FK → Usuario(id_usuario)**. Relación **Usuario 1..N Pedido**. Asigna el pedido al comprador responsable. |
+| **fk_id_usuario**  | string  | **FK → Usuario(id_usuario)**. Relación **Usuario M..N Pedido**. Asigna el pedido al comprador responsable. |
 | **fk_id_direccion**| string  | **FK → Dirección(id_direccion)**. Determina la dirección elegida para el envío. Alternativa: snapshot si se requieren históricos inmutables. |
 | total              | decimal | Importe global a cobrar; resultado de la suma de líneas e impuestos. |
 | estado             | string  | Gestiona el ciclo de vida del pedido (`pendiente`, `pagado`, `enviado`, etc.). |
@@ -91,7 +91,6 @@ Tipos: `string`, `int`, `decimal`, `Date` (ISO 8601).
 | **fk_id_producto**     | string  | **FK → Producto(id_producto)**. Relación **PedidoItem N..1 Producto** que materializa **Pedido N..M Producto**. |
 | cantidad               | int     | Unidades vendidas de ese producto en la línea. |
 | precio_unitario        | decimal | Precio del producto **congelado** en la compra; preserva histórico aunque cambie el catálogo. |
-| subtotal               | decimal | Resultado por línea (`precio_unitario × cantidad`); soporte para totales. |
 
 ---
 
