@@ -17,4 +17,4 @@ const productoSchema = new mongoose.Schema({
 productoSchema.index({ model: 1, year: -1 });
 productoSchema.index({ chip: 1, year: -1 });
 
-const Producto = mongoose.model("Producto", productoSchema)
+const Producto = mongoose.model("Producto", productoSchema);
