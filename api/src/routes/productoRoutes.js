@@ -1,10 +1,13 @@
-const Producto = require("../models/Producto.js");
 
-const crearProducto = async (productoData) => {
-	const newProducto = new Producto(productoData);
-	return await newProducto.save();
-};
 
-module.exports = {
-	crearProducto,
-};
+const express = require('express');
+const router = express.Router();
+const productController = require('../controladores/controladorProducto');
+
+// CRUD completo
+router.post('/', productController.crearProducto);
+router.get('/', productController.obtenerProductos);
+router.put('/:id', productController.actualizarProducto);
+router.delete('/:id', productController.eliminarProducto);
+
+module.exports = router;

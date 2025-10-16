@@ -6,3 +6,4 @@ db.sales.insertOne({
 })
 
 db.sales.find()
+
