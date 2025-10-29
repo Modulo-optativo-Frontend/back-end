@@ -1,0 +1,72 @@
+const usuarioServicio = require("../servicios/servicioUsuario");
+
+// Controlador para crear un nuevo usuario
+const crearUsuario = async (req, res) => {
+	try {
+		// Llamar al servicio para crear el usuario con los datos del body
+		await usuarioServicio.crearUsuario(req.body);
+		// Responder con éxito
+		res
+			.status(201)
+			.json({ status: "success", message: "Usuario creado exitosamente" });
+	} catch (error) {
+		// Responder con error si algo falla
+		res.status(400).json({ status: "error", message: error.message });
+	}
+};
+
+// Controlador para obtener todos los usuarios
+const obtenerUsuarios = async (req, res) => {
+	try {
+		// Llamar al servicio para obtener todos los usuarios
+		const usuarios = await usuarioServicio.obtenerUsuarios();
+		// Responder con éxito y la lista de usuarios
+		res.status(200).json({ status: "success", data: usuarios });
+	} catch (error) {
+		// Responder con error del servidor si algo falla
+		res.status(500).json({ status: "error", message: error.message });
+	}
+};
+
+// Controlador para actualizar un usuario
+const actualizarUsuario = async (req, res) => {
+	try {
+		// Llamar al servicio para actualizar el usuario por ID
+		const usuario = await usuarioServicio.actualizarUsuario(
+			req.params.id,
+			req.body
+		);
+		// Verificar si el usuario existe
+		if (!usuario) {
+			// Responder con error 404 si no se encuentra
+			return res
+				.status(404)
+				.json({ status: "error", message: "Usuario no encontrado" });
+		}
+		// Responder con éxito y el usuario actualizado
+		res.status(200).json({ status: "success", data: usuario });
+	} catch (error) {
+		// Responder con error si algo falla
+		res.status(400).json({ status: "error", message: error.message });
+	}
+};
+
+// Controlador para eliminar un usuario
+const eliminarUsuario = async (req, res) => {
+    try{
+        // Llamar al servicio para eliminar el usuario por ID
+        const usuario = await usuarioServicio.eliminarUsuario(req.params.id);
+
+
+    }catch (error) {
+        
+    }
+
+}
+
+module.exports = {
+	crearUsuario,
+	obtenerUsuarios,
+	actualizarUsuario,
+	eliminarUsuario,
+}

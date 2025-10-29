@@ -3,9 +3,11 @@ const mongoose = require("mongoose");
 
 // Crear esquema de producto con sus propiedades y validaciones
 const productoSchema = new mongoose.Schema({
+	// id
+	idAlphaNum: { type: String, required: true, unique: true },
 	// SKU único y obligatorio
 	sku: { type: String, required: true, unique: true },
-	// Nombre del producto obligatorio
+	// Nombre del producto objligatorio
 	name: { type: String, required: true },
 	// Precio obligatorio y mayor que 0
 	price: { type: Number, required: true, min: 0 },
@@ -33,6 +35,37 @@ const productoSchema = new mongoose.Schema({
 productoSchema.index({ model: 1, year: -1 });
 // Crear índice compuesto para búsquedas por chip y año
 productoSchema.index({ chip: 1, year: -1 });
+
+/*
+	Middleware pre-save para generar automáticamente un ID alfanumérico.
+	Este ID se compone por las tres primeras letras del nombre (en mayúsculas)
+	y el año del producto. Ejemplo: "MacBook", 2021 -> "MAC2021".
+*/
+
+productoSchema.pre("save", function (next) {
+	const producto = this;
+
+	// Comprobar si se debe generar o actualizar el ID alfanumérico
+	const idNoExiste = !producto.idAlphaNum;
+	const nombreModificado = producto.isModified("name");
+	const anioModificado = producto.isModified("year");
+
+	if (idNoExiste || nombreModificado || anioModificado) {
+		// Obtener las tres primeras letras del nombre en mayúsculas
+		const nombreEnMayusculas = producto.name.substring(0, 3).toUpperCase();
+
+		// Convertir el año a cadena o usar valor por defecto
+		const anioComoTexto = producto.year ? producto.year.toString() : "0000";
+
+		// Generar el ID final concatenando nombre y año
+		const idGenerado = `${nombreEnMayusculas}${anioComoTexto}`;
+
+		// Asignar el ID generado al campo del documento
+		producto.idAlphaNum = idGenerado;
+	}
+
+	next();
+});
 
 // Crear modelo Producto a partir del esquema
 const Producto = mongoose.model("Producto", productoSchema);
