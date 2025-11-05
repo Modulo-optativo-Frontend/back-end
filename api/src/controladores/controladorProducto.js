@@ -26,6 +26,25 @@ const obtenerProductos = async (req, res) => {
 		res.status(500).json({ status: "error", message: error.message });
 	}
 };
+const obtenerProductoPorId = async (req, res) => {
+	try {
+		// Llamar al servicio para obtener el producto por ID de MongoDB
+		const producto = await productoServicio.obtenerProductoPorId(req.params.id);
+
+		// Verificar si el producto existe
+		if (!producto) {
+			return res
+				.status(404)
+				.json({ status: "error", message: "Producto no encontrado" });
+		}
+
+		// Responder con éxito y el producto encontrado
+		res.status(200).json({ status: "success", data: producto });
+	} catch (error) {
+		// Responder con error del servidor si algo falla
+		res.status(500).json({ status: "error", message: error.message });
+	}
+};
 
 // Controlador para actualizar un producto
 const actualizarProducto = async (req, res) => {
@@ -76,4 +95,5 @@ module.exports = {
 	obtenerProductos,
 	actualizarProducto,
 	eliminarProducto,
+	obtenerProductoPorId,
 };

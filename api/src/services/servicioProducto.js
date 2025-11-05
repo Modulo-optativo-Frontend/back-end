@@ -15,6 +15,12 @@ const obtenerProductos = async () => {
 	return await Producto.find();
 };
 
+// Servicio para obtener un producto por ID
+const obtenerProductoPorId = async (id) => {
+	// Buscar y retornar el producto por su ID de MongoDB
+	return await Producto.findOne({ idAlfaNumerico: id });
+};
+
 // Servicio para actualizar un producto por ID
 const actualizarProducto = async (id, data) => {
 	// Buscar producto por ID, actualizarlo y retornar la versión actualizada
@@ -33,4 +39,5 @@ module.exports = {
 	obtenerProductos,
 	actualizarProducto,
 	eliminarProducto,
+	obtenerProductoPorId,
 };
