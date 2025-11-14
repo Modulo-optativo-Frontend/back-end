@@ -42,7 +42,7 @@ esquemaProducto.index({ chip: 1, anio: -1 });
 	y el año del producto. Ejemplo: "MacBook", 2021 -> "MAC2021".
 */
 
-esquemaProducto.pre("save", function (siguiente) {
+esquemaProducto.pre("save", function (next) {
 	const producto = this;
 
 	// Comprobar si se debe generar o actualizar el ID alfanumérico
@@ -64,7 +64,7 @@ esquemaProducto.pre("save", function (siguiente) {
 		producto.idAlfaNumerico = idGenerado;
 	}
 
-	siguiente();
+	next();
 });
 
 // Crear modelo Producto a partir del esquema
