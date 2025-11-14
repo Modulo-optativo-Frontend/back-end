@@ -1,5 +1,10 @@
 const usuarioServicio = require("../services/servicioUsuario");
 
+/**
+ * Controlador CRUD - Crear un nuevo usuario
+ * RECIBE: Datos del usuario desde req.body (name, email, password, role opcional)
+ * ENVÍA: Mensaje de confirmación al cliente con status 201
+ */
 // Controlador para crear un nuevo usuario
 const crearUsuario = async (req, res) => {
 	try {
@@ -15,6 +20,11 @@ const crearUsuario = async (req, res) => {
 	}
 };
 
+/**
+ * Controlador CRUD - Obtener todos los usuarios
+ * RECIBE: Petición GET sin parámetros
+ * ENVÍA: Array con todos los usuarios de la base de datos al cliente
+ */
 // Controlador para obtener todos los usuarios
 const obtenerUsuarios = async (req, res) => {
 	try {
@@ -28,6 +38,11 @@ const obtenerUsuarios = async (req, res) => {
 	}
 };
 
+/**
+ * Controlador CRUD - Actualizar un usuario existente
+ * RECIBE: ID del usuario desde req.params.id y datos a actualizar desde req.body
+ * ENVÍA: Usuario actualizado al cliente o error 404 si no existe
+ */
 // Controlador para actualizar un usuario
 const actualizarUsuario = async (req, res) => {
 	try {
@@ -51,6 +66,11 @@ const actualizarUsuario = async (req, res) => {
 	}
 };
 
+/**
+ * Controlador CRUD - Eliminar un usuario
+ * RECIBE: ID del usuario desde req.params.id
+ * ENVÍA: Usuario eliminado al cliente o error 404 si no existe
+ */
 // Controlador para eliminar un usuario
 const eliminarUsuario = async (req, res) => {
 	try {
@@ -68,6 +88,11 @@ const eliminarUsuario = async (req, res) => {
 	}
 };
 
+/**
+ * Controlador AUTH - Registrar nuevo usuario con autenticación
+ * RECIBE: Datos del usuario desde req.body (name, email, password)
+ * ENVÍA: Nombre del usuario y token JWT al cliente para autenticación
+ */
 //funciones que hace el user
 const registrarUsuario = async (req, res) => {
 	try {
@@ -92,6 +117,11 @@ const registrarUsuario = async (req, res) => {
 	}
 };
 
+/**
+ * Controlador AUTH - Iniciar sesión de usuario
+ * RECIBE: Credenciales desde req.body (email, password)
+ * ENVÍA: Datos del usuario y token JWT al cliente si las credenciales son válidas
+ */
 const loginUsuario = async (req, res) => {
 	try {
 		const { usuario, token } = await usuarioServicio.login(req.body);
