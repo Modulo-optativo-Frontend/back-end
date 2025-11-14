@@ -18,6 +18,7 @@ connectDB();
 
 // Importar las rutas de productos
 const productRoutes = require("./routes/productoRoutes.js");
+const usuarioRoutes = require("./routes/usuarioRoutes.js");
 
 // 6. Definir una ruta de prueba que sirve el archivo HTML
 app.get("/", (req, res) => {
@@ -25,8 +26,9 @@ app.get("/", (req, res) => {
 	res.sendFile(__dirname + "/index.html");
 });
 
-// 7. Usar las rutas de productos con prefijo /api/productos
+// 7. Usar las rutas con prefijo /api/
 app.use("/api/productos", productRoutes);
+app.use("/api/usuarios", usuarioRoutes);
 
 // Escuchar en el puerto definido en .env o por defecto 3000
 const PORT = process.env.PORT || 3000;

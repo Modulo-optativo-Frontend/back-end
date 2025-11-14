@@ -1,4 +1,4 @@
-const usuarioServicio = require("../servicios/servicioUsuario");
+const usuarioServicio = require("../services/servicioUsuario");
 
 // Controlador para crear un nuevo usuario
 const crearUsuario = async (req, res) => {
@@ -56,11 +56,13 @@ const eliminarUsuario = async (req, res) => {
 	try {
 		const usuario = await usuarioServicio.eliminarUsuario(req.params.id);
 		if (!usuario) {
-			res.status(404).json({
+			return res.status(404).json({
 				status: "error",
 				message: "No se ha podido eliminar el usuario",
 			});
 		}
+		// Responder con éxito y el usuario eliminado
+		res.status(200).json({ status: "success", data: usuario });
 	} catch (error) {
 		res.status(400).json({ status: "error", message: error.message });
 	}
@@ -69,20 +71,15 @@ const eliminarUsuario = async (req, res) => {
 //funciones que hace el user
 const registrarUsuario = async (req, res) => {
 	try {
-		const resultado = await usuarioServicio.registrar(req.body);
+		const resultado = await usuarioServicio.registrarUsuario(req.body);
 
-		if (!resultado) {
-			res.status(404).json({ status: "Error", message: "No hay resultado" });
-			return;
-		}
-
-		const nombre = resultado.name;
+		const nombre = resultado.usuario.name;
 		const token = resultado.token;
 
 		res.status(201).json({ status: "success", data: { nombre, token } });
 	} catch (error) {
-		if (error.code === 1100) {
-			res.status(400).json({ status: "Error", message: error.message });
+		if (error.code === 11000) {
+			res.status(409).json({ status: "Error", message: error.message });
 			return;
 		}
 
@@ -95,10 +92,26 @@ const registrarUsuario = async (req, res) => {
 	}
 };
 
+const loginUsuario = async (req, res) => {
+	try {
+		const { usuario, token } = await usuarioServicio.login(req.body);
+
+		res.status(200).json({ status: "Success", data: { usuario, token } });
+	} catch (error) {
+		if (error.name === "ValidationError") {
+			res.status(400).json({ status: "Error", message: error.message });
+			return;
+		}
+
+		res.status(500).json({ status: "Error", message: error.message });
+	}
+};
+
 module.exports = {
 	crearUsuario,
 	obtenerUsuarios,
 	actualizarUsuario,
 	eliminarUsuario,
 	registrarUsuario,
+	loginUsuario,
 };
