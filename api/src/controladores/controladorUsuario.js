@@ -53,20 +53,52 @@ const actualizarUsuario = async (req, res) => {
 
 // Controlador para eliminar un usuario
 const eliminarUsuario = async (req, res) => {
-    try{
-        // Llamar al servicio para eliminar el usuario por ID
-        const usuario = await usuarioServicio.eliminarUsuario(req.params.id);
+	try {
+		const usuario = await usuarioServicio.eliminarUsuario(req.params.id);
+		if (!usuario) {
+			res.status(404).json({
+				status: "error",
+				message: "No se ha podido eliminar el usuario",
+			});
+		}
+	} catch (error) {
+		res.status(400).json({ status: "error", message: error.message });
+	}
+};
 
+//funciones que hace el user
+const registrarUsuario = async (req, res) => {
+	try {
+		const resultado = await usuarioServicio.registrar(req.body);
 
-    }catch (error) {
-        
-    }
+		if (!resultado) {
+			res.status(404).json({ status: "Error", message: "No hay resultado" });
+			return;
+		}
 
-}
+		const nombre = resultado.name;
+		const token = resultado.token;
+
+		res.status(201).json({ status: "success", data: { nombre, token } });
+	} catch (error) {
+		if (error.code === 1100) {
+			res.status(400).json({ status: "Error", message: error.message });
+			return;
+		}
+
+		if (error.name === "ValidationError") {
+			res.status(400).json({ status: "error", message: error.message });
+			return;
+		}
+
+		res.status(500).json({ status: "error", message: error.message });
+	}
+};
 
 module.exports = {
 	crearUsuario,
 	obtenerUsuarios,
 	actualizarUsuario,
 	eliminarUsuario,
-}
+	registrarUsuario,
+};
