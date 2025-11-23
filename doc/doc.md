@@ -1,25 +1,28 @@
 # Requisitos funcionales
 
-  - Dominio de la web: silverline
+- Dominio de la web: silverline
 
-    ## Requisitos funcionales
-    ### no logueado
-    - buscar producto
-    - ver productos
-    - filtrar producto
-    - añadir producto al carrito
-    - quitar producto del carrito
+  ## Requisitos
+
+  ### no logueado
+
+  - buscar producto
+  - ver productos
+  - filtrar producto
+  - añadir producto al carrito
+  - quitar producto del carrito
 
     ### usuario logueado
-    - buscar producto
-    - ver productos
-    - filtrar producto
-    - añadir producto al carrito
-    - quitar producto del carrito
-   
+
+  - buscar producto
+  - ver productos
+  - filtrar producto
+  - añadir producto al carrito
+  - quitar producto del carrito
 
     ### Admin
-    -  Crear productos
-    -  modificar productos
-    -  eliminar productos
-    -  ver productos
+
+  - Crear productos
+  - modificar productos
+  - eliminar productos
+  - ver productos
