@@ -15,17 +15,13 @@ const userSchema = new mongoose.Schema(
 
 		// Rol del usuario con valor por defecto "customer"
 		role: { type: String, enum: ["admin", "customer"], default: "customer" },
+
+		// refreshToken para la auth
+		refreshToken: { type: String, required: false, default: null },
 	},
 	{ timestamps: true }
 );
 
-// userSchema.methods.compararPassword = async function (passwordCandidata) {
-// 	const match = await bcrypt.compare(passwordCandidata, this.password);
-// 	return match;
-// };
-
-
-//Funciones antes de guardar
 userSchema.pre("save", async function (next) {
 	if (!this.isModified("password")) return next();
 	const saltRounds = Number(process.env.HASH_NUMBER) || 10;

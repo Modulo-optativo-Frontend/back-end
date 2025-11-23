@@ -96,20 +96,25 @@ const login = async (usuarioData) => {
  * RECIBE: Objeto usuario de MongoDB
  * ENVÍA: Objeto con usuario limpio (sin password) y token JWT firmado
  */
-function generarAuth(usuarioEntrado) {
-	// 1) Construir payload del token: { id:_id, email, role }
+async function generarAuth(usuarioEntrado) {
 	const payload = {
 		id: usuarioEntrado._id,
 		email: usuarioEntrado.email,
 		role: usuarioEntrado.role,
 	};
 
-	// 2) Firmar el token con JWT_SECRET y expiresIn
 	const token = jwt.sign(payload, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRES_IN,
 	});
 
-	// 3) Construir usuario público (sin password): { id, name, email, role, createdAt }
+	const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+		expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+	});
+
+	usuarioEntrado.refreshToken = refreshToken;
+
+	await usuarioEntrado.save();
+
 	const usuario = {
 		id: usuarioEntrado._id,
 		name: usuarioEntrado.name,
@@ -118,9 +123,44 @@ function generarAuth(usuarioEntrado) {
 		createdAt: usuarioEntrado.createdAt,
 	};
 
-	// 4) return { usuarioSinPassword, token }
-	return { usuario, token };
+	return { usuario, token, refreshToken };
 }
+
+const renovarToken = async (refreshToken) => {
+	if (!refreshToken) {
+		const error = new Error("Refresh token requerido");
+
+		error.statusCode = 400;
+		throw error;
+	}
+	let payload;
+	try {
+		payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+	} catch (errorJwt) {
+		const error = new Error("Refresh token inválido o caducado");
+		error.statusCode = 401;
+		throw error;
+	}
+
+	const usuarioId = payload.id;
+
+	const usuario = await Usuario.findById(usuarioId);
+
+	if (!usuario) {
+		const error = new Error("Usuario no encontrado");
+		error.statusCode = 404;
+		throw error;
+	}
+
+	if (usuario.refreshToken !== refreshToken) {
+		const error = new Error("Los tokens no coinciden");
+		error.statusCode = 401;
+		throw error;
+	}
+
+	const resultado = await generarAuth(usuario);
+	return resultado;
+};
 
 // Exportar todos los servicios
 module.exports = {
@@ -130,4 +170,5 @@ module.exports = {
 	eliminarUsuario,
 	registrarUsuario,
 	login,
+	renovarToken,
 };
