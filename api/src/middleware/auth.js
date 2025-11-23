@@ -29,3 +29,7 @@ function auth(req, res, next) {
 		res.status(401).json({ status: "Error", message: "Token inválido" });
 	}
 }
+
+module.exports={
+	auth
+}
