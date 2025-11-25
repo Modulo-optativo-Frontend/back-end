@@ -1,7 +1,6 @@
 const process = require("process");
 const jwt = require("jsonwebtoken");
 
-
 function auth(req, res, next) {
 	const authHeader = req.headers.authorization;
 
@@ -30,6 +29,6 @@ function auth(req, res, next) {
 	}
 }
 
-module.exports={
-	auth
-}
+module.exports = {
+	auth,
+};
