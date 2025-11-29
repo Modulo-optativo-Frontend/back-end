@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const usuarioController = require("../controladores/controladorUsuario.js");
 const auth = require("../middleware/auth.js");
-console.log("AUTH ES:", auth);
 
 // === RUTAS CRUD BÁSICAS ===
 // POST / - Crear usuario (datos en body)

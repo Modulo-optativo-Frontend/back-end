@@ -153,6 +153,9 @@ const renovarToken = async (refreshToken) => {
 	}
 
 	if (usuario.refreshToken !== refreshToken) {
+		usuario.token = null;
+		await usuario.save();
+
 		const error = new Error("Los tokens no coinciden");
 		error.statusCode = 401;
 		throw error;
