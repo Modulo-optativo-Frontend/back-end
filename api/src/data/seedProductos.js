@@ -1,3 +1,4 @@
+// Datos base para poblar la colección Producto.
 const macbooks = [
 	{
 		nombre: "MacBook Air",
@@ -57,6 +58,7 @@ const macbooks = [
 	},
 ];
 
+// Genera el idAlfaNumerico siguiendo la misma lógica del modelo.
 const buildId = (nombre, anio) => {
 	const prefijo = (nombre || "MAC").substring(0, 3).toUpperCase();
 	const year = anio ? anio.toString() : "0000";

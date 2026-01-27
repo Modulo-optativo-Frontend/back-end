@@ -1,9 +1,11 @@
+// Script manual de seed (se ejecuta con npm run seed).
 require("dotenv").config();
 const mongoose = require("mongoose");
 const Producto = require("../models/Producto");
 const { macbooks, buildId } = require("../data/seedProductos");
 
 async function seed() {
+	// Conecta y hace upsert por SKU para evitar duplicados.
 	if (!process.env.MONGO_URI) {
 		throw new Error("MONGO_URI no esta definido");
 	}
@@ -12,6 +14,7 @@ async function seed() {
 	console.log("MongoDB conectado para seed");
 
 	for (const item of macbooks) {
+		// Añade idAlfaNumerico antes de guardar.
 		const data = {
 			...item,
 			idAlfaNumerico: buildId(item.nombre, item.anio),
