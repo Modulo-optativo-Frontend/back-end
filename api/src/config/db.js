@@ -1,5 +1,6 @@
 // Importar la librería mongoose per conectar amb MongoDB
 const mongoose = require("mongoose");
+const seedDatabase = require("../utils/seedDatabase");
 
 // Funció asíncrona per connectar a la base de dades
 const connectDB = async () => {
@@ -9,6 +10,8 @@ const connectDB = async () => {
 		
 		// Mostrar missatge d'èxit per consola
 		console.log("MongoDB connectat correctament");
+
+		await seedDatabase();
 	} catch (err) {
 		// Mostrar error per consola si la connexió falla
 		console.error(err.message);
