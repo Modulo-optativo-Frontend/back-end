@@ -6,6 +6,7 @@ const connectDB = async () => {
 	try {
 		// Connectar a MongoDB utilitzant la URI de l'arxiu d'entorn
 		await mongoose.connect(process.env.MONGO_URI);
+		
 		// Mostrar missatge d'èxit per consola
 		console.log("MongoDB connectat correctament");
 	} catch (err) {
