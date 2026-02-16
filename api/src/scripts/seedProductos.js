@@ -13,16 +13,20 @@ async function seed() {
 	await mongoose.connect(process.env.MONGO_URI);
 	console.log("MongoDB conectado para seed");
 
-	for (const item of macbooks) {
+	for (const productoBase of macbooks) {
 		// Añade idAlfaNumerico antes de guardar.
-		const data = {
-			...item,
-			idAlfaNumerico: buildId(item.nombre, item.anio),
+		const productoFinal = {
+			...productoBase,
+			idAlfaNumerico: buildId(
+				productoBase.nombre,
+				productoBase.anio,
+				productoBase.codigoSku
+			),
 		};
 
 		await Producto.findOneAndUpdate(
-			{ codigoSku: item.codigoSku },
-			data,
+			{ codigoSku: productoBase.codigoSku },
+			productoFinal,
 			{ upsert: true, new: true, runValidators: true }
 		);
 	}
@@ -31,7 +35,7 @@ async function seed() {
 	await mongoose.disconnect();
 }
 
-seed().catch((err) => {
-	console.error(err);
+seed().catch((error) => {
+	console.error(error);
 	process.exit(1);
 });

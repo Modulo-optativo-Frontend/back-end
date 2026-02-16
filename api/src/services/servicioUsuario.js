@@ -4,6 +4,12 @@ const jwt = require("jsonwebtoken");
 const process = require("process");
 const bcrypt = require("bcrypt");
 
+function crearError(mensaje, statusCode) {
+	const error = new Error(mensaje);
+	error.statusCode = statusCode;
+	return error;
+}
+
 /**
  * Servicio CRUD - Crear un nuevo usuario en la base de datos
  * RECIBE: Objeto usuarioData con los datos del usuario
@@ -59,7 +65,7 @@ const registrarUsuario = async (usuarioData) => {
 
 	//si existe -> lanzar un error de "duplicado" (controller)
 	if (existe) {
-		throw new Error("Usuario existe ya");
+		throw crearError("Usuario existe ya", 409);
 	}
 
 	// 3) Crear el usuario (el hook del modelo ya hará el hash)
@@ -79,13 +85,13 @@ const login = async (usuarioData) => {
 	const usuarioEncontrado = await Usuario.findOne({ email });
 
 	if (!usuarioEncontrado) {
-		throw new Error("Usuario no encontrado");
+		throw crearError("Usuario no encontrado", 404);
 	}
 
 	const match = await bcrypt.compare(password, usuarioEncontrado.password);
 
 	if (!match) {
-		throw new Error("no hay correo");
+		throw crearError("Credenciales inválidas", 401);
 	}
 
 	return generarAuth(usuarioEncontrado);

@@ -4,15 +4,19 @@ const { macbooks, buildId } = require("../data/seedProductos");
 
 async function seedDatabase() {
 	// Evita duplicados: solo se inserta si no hay productos.
-	const totalProductos = await Producto.countDocuments();
-	if (totalProductos > 0) return;
+	const cantidadProductosEnBaseDeDatos = await Producto.countDocuments();
+	if (cantidadProductosEnBaseDeDatos > 0) return;
 
-	const productos = macbooks.map((item) => ({
-		...item,
-		idAlfaNumerico: buildId(item.nombre, item.anio),
+	const productosParaInsertar = macbooks.map((productoBase) => ({
+		...productoBase,
+		idAlfaNumerico: buildId(
+			productoBase.nombre,
+			productoBase.anio,
+			productoBase.codigoSku
+		),
 	}));
 
-	await Producto.insertMany(productos);
+	await Producto.insertMany(productosParaInsertar);
 	console.log("Seed de productos insertado (DB estaba vacia)");
 }
 

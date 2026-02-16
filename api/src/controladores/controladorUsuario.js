@@ -124,7 +124,9 @@ const loginUsuario = async (req, res) => {
 			return;
 		}
 
-		res.status(500).json({ status: "Error", message: error.message });
+		res
+			.status(error.statusCode || 500)
+			.json({ status: "Error", message: error.message });
 	}
 };
 

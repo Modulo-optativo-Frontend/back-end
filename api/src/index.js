@@ -1,29 +1,42 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
-const connectDB = require("./config/db");
+const conectarBaseDeDatos = require("./config/db");
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173" }));
+const origenPermitido = process.env.CORS_ORIGIN || "http://localhost:5173";
+app.use(cors({ origin: origenPermitido }));
 app.use(express.json());
-connectDB();
+app.use("/images/macbooks", express.static(path.join(__dirname, "data")));
 
-// Importar las rutas de productos
-const productRoutes = require("./routes/productoRoutes.js");
-const usuarioRoutes = require("./routes/usuarioRoutes.js");
-const carritoRoutes = require("./routes/carritoRoutes.js");
+// Rutas
+const rutasProductos = require("./routes/productoRoutes.js");
+const rutasUsuarios = require("./routes/usuarioRoutes.js");
+const rutasCarrito = require("./routes/carritoRoutes.js");
 
 app.get("/", (req, res) => {
 	res.sendFile(__dirname + "/index.html");
 });
 
-app.use("/api/productos", productRoutes);
-app.use("/api/usuarios", usuarioRoutes);
-app.use("/api/carrito", carritoRoutes);
+app.use("/api/productos", rutasProductos);
+app.use("/api/usuarios", rutasUsuarios);
+app.use("/api/carrito", rutasCarrito);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-	console.log(`Servidor escuchando en el puerto ${PORT}`);
+
+async function iniciarServidor() {
+	// Primero conectamos con la base de datos.
+	await conectarBaseDeDatos();
+
+	app.listen(PORT, () => {
+		console.log(`Servidor escuchando en el puerto ${PORT}`);
+	});
+}
+
+iniciarServidor().catch((error) => {
+	console.error("Error arrancando servidor:", error.message);
+	process.exit(1);
 });

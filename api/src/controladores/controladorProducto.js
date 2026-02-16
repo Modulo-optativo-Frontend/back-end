@@ -17,8 +17,8 @@ const crearProducto = async (req, res) => {
 // Controlador para obtener todos los productos
 const obtenerProductos = async (req, res) => {
 	try {
-		// Llamar al servicio para obtener todos los productos
-		const productos = await productoServicio.obtenerProductos();
+		// Llamar al servicio para obtener productos aplicando filtros opcionales
+		const productos = await productoServicio.obtenerProductos(req.query);
 		// Responder con éxito y la lista de productos
 		res.status(200).json({ status: "success", data: productos });
 	} catch (error) {

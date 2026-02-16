@@ -1,23 +1,17 @@
-// Importar la librería mongoose per conectar amb MongoDB
 const mongoose = require("mongoose");
-const seedDatabase = require("../utils/seedDatabase");
 
-// Funció asíncrona per connectar a la base de dades
-const connectDB = async () => {
+const conectarBaseDeDatos = async () => {
 	try {
-		// Connectar a MongoDB utilitzant la URI de l'arxiu d'entorn
-		await mongoose.connect(process.env.MONGO_URI);
-		
-		// Mostrar missatge d'èxit per consola
-		console.log("MongoDB connectat correctament");
+		if (!process.env.MONGO_URI) {
+			throw new Error("Falta MONGO_URI en el .env");
+		}
 
-		await seedDatabase();
-	} catch (err) {
-		// Mostrar error per consola si la connexió falla
-		console.error(err.message);
-		// Terminar el procés amb codi d'error
+		await mongoose.connect(process.env.MONGO_URI);
+		console.log("MongoDB conectada correctamente");
+	} catch (error) {
+		console.error("Error de MongoDB:", error.message);
 		process.exit(1);
 	}
 };
-// Exportar la funció per utilitzar-la en altres arxius
-module.exports = connectDB;
+
+module.exports = conectarBaseDeDatos;
