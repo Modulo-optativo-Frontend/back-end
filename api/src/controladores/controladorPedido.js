@@ -7,9 +7,10 @@ const crearPedido = async (req, res) => {
 		await pedidoServicio.crearPedido(req.body);
 
 		// Responder con exito
-		res
-			.status(201)
-			.json({ status: "success", message: "Pedido creado exitosamente" });
+		res.status(201).json({
+			status: "success",
+			message: "Pedido creado exitosamente",
+		});
 	} catch (error) {
 		// Responder con error si algo falla
 		res.status(400).json({ status: "error", message: error.message });
@@ -33,7 +34,7 @@ const actualizarPedido = async (req, res) => {
 		// Llamar al servicio para actualizar el pedido por ID
 		const pedido = await pedidoServicio.actualizarPedido(
 			req.params.id,
-			req.body
+			req.body,
 		);
 
 		// Verificar si el pedido existe
@@ -71,9 +72,36 @@ const eliminarPedido = async (req, res) => {
 	}
 };
 
+const checkout = async (req, res) => {
+	try {
+		const userId = req.user.id;
+		const pedido = await pedidoServicio.checkout(userId, req.body);
+
+		if (!userId) {
+			return res.status(401).json({
+				ok: false,
+				message: "Token sin id de usuario",
+			});
+		}
+
+		return res.status(201).json({
+			ok: true,
+			orderId: pedido._id,
+			total: pedido.total,
+			estado: pedido.estado,
+		});
+	} catch (error) {
+		console.error("Error en checkout:", error);
+		return res.status(400).json({
+			ok: false,
+			message: error.message || "Error en el checkout",
+		});
+	}
+};
 module.exports = {
 	crearPedido,
 	obtenerPedidos,
 	actualizarPedido,
 	eliminarPedido,
+	checkout,
 };
