@@ -7,14 +7,10 @@ const conectarBaseDeDatos = require("./config/db");
 
 const app = express();
 
-const origenPermitido =
-	process.env.CORS_ORIGIN || "http://localhost:5173";
+const origenPermitido = process.env.CORS_ORIGIN || "http://localhost:5173";
 app.use(cors({ origin: origenPermitido }));
 app.use(express.json());
-app.use(
-	"/images/macbooks",
-	express.static(path.join(__dirname, "data")),
-);
+app.use("/images/macbooks", express.static(path.join(__dirname, "data")));
 
 // Rutas
 const rutasProductos = require("./routes/productoRoutes.js");
@@ -34,7 +30,6 @@ app.use("/api/pedidos", rutasPedidos);
 const PORT = process.env.PORT || 3000;
 
 async function iniciarServidor() {
-	
 	// Primero conectamos con la base de datos.
 	await conectarBaseDeDatos();
 

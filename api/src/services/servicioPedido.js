@@ -1,6 +1,7 @@
 const Carrito = require("../models/Carrito");
 const Pedido = require("../models/Pedido");
 const Producto = require("../models/Producto");
+
 // Servicio para crear un nuevo pedido
 const crearPedido = async (pedidoData) => {
 	// Crear nueva instancia del Pedido con los datos recibidos
@@ -24,65 +25,95 @@ const eliminarPedido = async (id) => {
 	return await Pedido.findByIdAndDelete(id);
 };
 
+
+
+class HttpError extends Error {
+	constructor(status, message) {
+		super(message);
+		this.status = status;
+	}
+}
+
 const checkout = async (userId) => {
-	// 1. Obtener el carrito del usuario con los productos poblados
-	const carrito = await Carrito.findOne({
-		usuario: userId,
-	}).populate("items.producto");
+	// 1) Carrito + populate
+	const carritoUsuario = await Carrito.findOne({ usuario: userId }).populate(
+		"items.producto",
+	);
 
-	// 2. Validar existencia y contenido del carrito
-	if (!carrito) {
-		throw new Error("Carrito no encontrado");
-	}
+	if (!carritoUsuario) throw new HttpError(404, "Carrito no encontrado");
+	if (!carritoUsuario.items || carritoUsuario.items.length === 0)
+		throw new HttpError(400, "El carrito está vacío");
 
-	if (carrito.items.length === 0) {
-		throw new Error("El carrito está vacío");
-	}
+	// Si tu regla de negocio es 1 producto por pedido
+	if (carritoUsuario.items.length > 1)
+		throw new HttpError(400, "Solo se permite comprar 1 producto");
 
-	// 3. Transformar items del carrito en items del pedido
 	const itemsPedido = [];
 	let total = 0;
 
-	for (const item of carrito.items) {
-		// Validar que el producto exista
-		if (!item.producto) {
-			throw new Error("Uno de los productos ya no existe");
-		}
+	// 2) Validar + vender (atómico)
 
-		// Validar disponibilidad
-		if (item.producto.enStock === false) {
-			throw new Error(`Producto sin stock: ${item.producto.nombre}`);
+	for (const item of carritoUsuario.items) {
+		if (!item.producto)
+			throw new HttpError(409, "Uno de los productos ya no existe");
+		if (item.cantidad !== 1)
+			throw new HttpError(400, "Cantidad inválida: producto único (1 ud)");
+
+		const productoId = item.producto._id;
+
+		// ✅ Venta ATÓMICA (anti doble compra)
+		const vendido = await Producto.findOneAndUpdate(
+			{ _id: productoId, enStock: true },
+			{ $set: { enStock: false } },
+			{ new: true },
+		);
+
+		if (!vendido) {
+			throw new HttpError(409, "Producto ya vendido");
 		}
 
 		const precioActual = item.producto.precio;
-		const subtotal = precioActual * item.cantidad;
-
-		// Añadir al array del pedido
 		itemsPedido.push({
-			producto: item.producto._id,
-			cantidad: item.cantidad,
+			producto: productoId,
+			cantidad: 1,
 			precioUnitario: precioActual,
 		});
 
-		// Acumular total
-		total += subtotal;
+		total += precioActual;
 	}
 
-	// 4. Crear el pedido
-	const pedido = await Pedido.create({
-		usuario: userId,
-		items: itemsPedido,
-		total,
-		estado: "pendiente",
-		// direccionEnvio: body.direccionEnvio (si se implementa)
-	});
+	// 3) Crear pedido
+	let pedido;
+	try {
+		pedido = await Pedido.create({
+			usuario: userId,
+			items: itemsPedido,
+			total,
+			estado: "pendiente",
+		});
+	} catch (err) {
+		const productoId = itemsPedido[0]?.producto;
 
-	// 5. Vaciar carrito tras confirmación
-	carrito.items = [];
-	await carrito.save();
+		if (productoId) {
+			await Producto.updateOne(
+				{ _id: productoId },
+				{ $set: { enStock: true } },
+			);
+		}
+		throw err;
+	}
 
-	// 6. Devolver pedido creado
+	// 4) Vaciar carrito
+	carritoUsuario.items = [];
+	await carritoUsuario.save();
+
 	return pedido;
+};
+
+const obtenerPedidosPorUser = async (userId) => {
+	return await Pedido.find({ usuario: userId })
+		.populate("items.producto", "nombre precio imagenes modelo anio")
+		.sort({ createdAt: -1 });
 };
 
 // Exportar todos los servicios
@@ -92,4 +123,5 @@ module.exports = {
 	actualizarPedido,
 	eliminarPedido,
 	checkout,
+	obtenerPedidosPorUser,
 };

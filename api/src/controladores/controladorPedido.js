@@ -74,15 +74,16 @@ const eliminarPedido = async (req, res) => {
 
 const checkout = async (req, res) => {
 	try {
-		const userId = req.user.id;
-		const pedido = await pedidoServicio.checkout(userId, req.body);
-
+		const userId = req.user?.id;
 		if (!userId) {
 			return res.status(401).json({
 				ok: false,
-				message: "Token sin id de usuario",
+				message: "No autenticado o token inválido",
 			});
 		}
+
+		// Si el service NO usa body, no lo pases.
+		const pedido = await pedidoServicio.checkout(userId);
 
 		return res.status(201).json({
 			ok: true,
@@ -91,11 +92,32 @@ const checkout = async (req, res) => {
 			estado: pedido.estado,
 		});
 	} catch (error) {
-		console.error("Error en checkout:", error);
-		return res.status(400).json({
+		// Si tu service lanza HttpError con status, úsalo.
+		const status = error.status || 400;
+
+		return res.status(status).json({
 			ok: false,
 			message: error.message || "Error en el checkout",
 		});
+	}
+};
+
+const obtenerMisPedidos = async (req, res) => {
+	try {
+		const userId = req.user?.id;
+		if (!userId) {
+			return res.status(401).json({
+				status: "error",
+				message: "No autenticado",
+			});
+		}
+
+		const pedidos = await pedidoServicio.obtenerPedidosPorUser(userId);
+
+		return res.status(200).json({ status: "success", data: pedidos });
+	} catch (error) {
+		const status = error.status || 500;
+		return res.status(status).json({ status: "error", message: error.message });
 	}
 };
 module.exports = {
@@ -104,4 +126,5 @@ module.exports = {
 	actualizarPedido,
 	eliminarPedido,
 	checkout,
+	obtenerMisPedidos,
 };
