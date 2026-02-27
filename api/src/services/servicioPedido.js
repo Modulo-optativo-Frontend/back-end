@@ -43,11 +43,7 @@ const checkout = async (userId) => {
 	if (!carritoUsuario) throw new HttpError(404, "Carrito no encontrado");
 	if (!carritoUsuario.items || carritoUsuario.items.length === 0)
 		throw new HttpError(400, "El carrito está vacío");
-
-	// Si tu regla de negocio es 1 producto por pedido
-	if (carritoUsuario.items.length > 1)
-		throw new HttpError(400, "Solo se permite comprar 1 producto");
-
+	
 	const itemsPedido = [];
 	let total = 0;
 
