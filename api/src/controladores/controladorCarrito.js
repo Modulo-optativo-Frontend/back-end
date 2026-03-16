@@ -41,6 +41,7 @@ const agregarItem = async (req, res) => {
 // DELETE /api/carrito/items/:productoId
 const quitarItem = async (req, res) => {
 	try {
+		
 		const usuarioId = obtenerUsuarioIdDesdeToken(req.user);
 		const { productoId } = req.params;
 

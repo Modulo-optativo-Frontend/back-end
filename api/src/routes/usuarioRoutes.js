@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const usuarioController = require("../controladores/controladorUsuario.js");
 const auth = require("../middleware/auth.js");
+const role = require("../middleware/roleMiddle.js");
 
 // === RUTAS CRUD BÁSICAS ===
 // POST / - Crear usuario (datos en body)
@@ -10,10 +11,20 @@ const auth = require("../middleware/auth.js");
 // DELETE /:id - Eliminar usuario por ID
 
 //Crud completo
-router.post("/", auth.auth, usuarioController.crearUsuario);
-router.get("/",  auth.auth, usuarioController.obtenerUsuarios);
-router.put("/:id",  auth.auth, usuarioController.actualizarUsuario);
-router.delete("/:id",  auth.auth, usuarioController.eliminarUsuario);
+router.post("/", auth.auth, role.validarRole, usuarioController.crearUsuario);
+router.get("/", auth.auth, role.validarRole, usuarioController.obtenerUsuarios);
+router.put(
+	"/:id",
+	auth.auth,
+	role.validarRole,
+	usuarioController.actualizarUsuario,
+);
+router.delete(
+	"/:id",
+	auth.auth,
+	role.validarRole,
+	usuarioController.eliminarUsuario,
+);
 
 // === RUTAS DE AUTENTICACIÓN ===
 // POST /registrar - Registrar nuevo usuario (name, email, password en body) → devuelve token

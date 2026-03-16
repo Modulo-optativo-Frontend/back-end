@@ -30,6 +30,7 @@ app.use("/api/pedidos", rutasPedidos);
 const PORT = process.env.PORT || 3000;
 
 async function iniciarServidor() {
+	
 	// Primero conectamos con la base de datos.
 	await conectarBaseDeDatos();
 

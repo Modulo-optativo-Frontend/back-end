@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const process = require("process");
 
+
+
 const userSchema = new mongoose.Schema(
 	{
 		// Nombre mínimo 2 caracteres y obligatorio
