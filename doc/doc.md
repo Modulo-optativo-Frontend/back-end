@@ -23,7 +23,7 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 
 ### Estructura de Capas
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     RUTAS (routes/)                         │
 │  - Definen endpoints                                        │
@@ -64,15 +64,15 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 
 ### Tecnologías
 
-| Componente | Tecnología | Versión |
-|------------|------------|---------|
-| Runtime | Node.js | 16.x |
-| Framework | Express | 5.1.0 |
-| Base de datos | MongoDB | 8.x |
-| ODM | Mongoose | 8.19.0 |
-| Auth | JWT | 9.0.2 |
-| Seguridad | Bcrypt | 5.1.1 |
-| Desarrollo | Nodemon | 3.1.10 |
+| Componente    | Tecnología | Versión |
+| ------------- | ---------- | ------- |
+| Runtime       | Node.js    | 16.x    |
+| Framework     | Express    | 5.1.0   |
+| Base de datos | MongoDB    | 8.x     |
+| ODM           | Mongoose   | 8.19.0  |
+| Auth          | JWT        | 9.0.2   |
+| Seguridad     | Bcrypt     | 5.1.1   |
+| Desarrollo    | Nodemon    | 3.1.10  |
 
 ---
 
@@ -95,11 +95,13 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 ```
 
 **Características especiales**:
+
 - Hash automático de contraseñas mediante hook `pre-save`
 - Índices compuestos en `role` y `createdAt` para queries optimizadas
 - Validación de formato de email con regex
 
 **Índices**:
+
 - `{ role: 1, createdAt: -1 }` - Compuesto para búsquedas por rol y fecha
 - `{ role: 1 }` - Búsqueda por rol
 - `{ createdAt: -1 }` - Ordenación por fecha
@@ -131,15 +133,17 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 ```
 
 **Características especiales**:
+
 - Generación automática de `idAlfaNumerico` mediante hook `pre-save`
 - Índices compuestos en `modelo + anio` y `chip + anio`
 - Validación de enums para specs técnicas
 
 **Índices**:
+
 - `{ modelo: 1, anio: -1 }` - Búsqueda por modelo y año
 - `{ chip: 1, anio: -1 }` - Búsqueda por chip y año
-- `{ codigoSku: 1 }` - Únicon
-- `{ idAlfaNumerico: 1 }` - Únicon
+- `{ codigoSku: 1 }` - Único
+- `{ idAlfaNumerico: 1 }` - Único
 
 ---
 
@@ -160,6 +164,7 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 ```
 
 **Características especiales**:
+
 - Un carrito por usuario (unique: true)
 - Relación embebida con items
 - Timestamps para sincronización multi-dispositivo
@@ -187,6 +192,7 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 ```
 
 **Características especiales**:
+
 - Precio unitario congelado al momento de compra (histórico)
 - Validación de al menos un item
 - Estados controlados por enum
@@ -216,7 +222,7 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 
 ### Base URL
 
-```
+```http
 http://localhost:3000/api
 ```
 
@@ -226,11 +232,11 @@ http://localhost:3000/api
 
 #### Autenticación
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| POST | `/usuarios/registrar` | Registrar nuevo usuario | No | `{ name, email, password }` |
-| POST | `/usuarios/login` | Iniciar sesión | No | `{ email, password }` |
-| POST | `/usuarios/refresh` | Renovar access token | No | `{ refreshToken }` |
+| Método | Endpoint              | Descripción             | Auth | Body                        |
+| ------ | --------------------- | ----------------------- | ---- | --------------------------- |
+| POST   | `/usuarios/registrar` | Registrar nuevo usuario | No   | `{ name, email, password }` |
+| POST   | `/usuarios/login`     | Iniciar sesión          | No   | `{ email, password }`       |
+| POST   | `/usuarios/refresh`   | Renovar access token    | No   | `{ refreshToken }`          |
 
 **Respuesta de registro/login exitosa:**
 
@@ -249,50 +255,50 @@ http://localhost:3000/api
 
 #### CRUD (Requiere Auth + Rol Admin)
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/usuarios` | Crear usuario |
-| GET | `/usuarios` | Listar todos los usuarios |
-| GET | `/usuarios/:id` | Obtener usuario por ID |
-| PUT | `/usuarios/:id` | Actualizar usuario |
-| DELETE | `/usuarios/:id` | Eliminar usuario |
+| Método | Endpoint        | Descripción               | Auth  | Body                              |
+| ------ | --------------- | ------------------------- | ----- | --------------------------------- |
+| POST   | `/usuarios`     | Crear usuario             | Admin | `{ name, email, password, role }` |
+| GET    | `/usuarios`     | Listar todos los usuarios | Admin | -                                 |
+| GET    | `/usuarios/:id` | Obtener usuario por ID    | Admin | -                                 |
+| PUT    | `/usuarios/:id` | Actualizar usuario        | Admin | `{ name, email, password, role }` |
+| DELETE | `/usuarios/:id` | Eliminar usuario          | Admin | -                                 |
 
 ---
 
 ### Productos
 
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| POST | `/productos` | Crear producto | No |
-| GET | `/productos` | Listar productos | No |
-| GET | `/productos/:id` | Obtener producto por ID | No |
-| PUT | `/productos/:id` | Actualizar producto | No |
-| DELETE | `/productos/:id` | Eliminar producto | Admin |
+| Método | Endpoint         | Descripción             | Auth  |
+| ------ | ---------------- | ----------------------- | ----- |
+| POST   | `/productos`     | Crear producto          | No    |
+| GET    | `/productos`     | Listar productos        | No    |
+| GET    | `/productos/:id` | Obtener producto por ID | No    |
+| PUT    | `/productos/:id` | Actualizar producto     | No    |
+| DELETE | `/productos/:id` | Eliminar producto       | Admin |
 
 **Parámetros de query para GET /productos:**
 
-| Parámetro | Tipo | Descripción |
-|-----------|------|-------------|
-| `modelo` | string | Filtrar por modelo |
-| `anio` | number | Filtrar por año |
-| `chip` | string | Filtrar por chip |
-| `precioMin` | number | Precio mínimo |
-| `precioMax` | number | Precio máximo |
-| `enStock` | boolean | Filtrar por disponibilidad |
-| `sort` | string | Campo de ordenación (precio, nombre, anio) |
-| `order` | string | Orden: `asc` o `desc` |
+| Parámetro   | Tipo    | Descripción                                      |
+| ----------- | ------- | ------------------------------------------------ |
+| `modelo`    | string  | Filtrar por modelo                               |
+| `anio`      | number  | Filtrar por año                                  |
+| `chip`      | string  | Filtrar por chip                                 |
+| `precioMin` | number  | Precio mínimo                                    |
+| `precioMax` | number  | Precio máximo                                    |
+| `enStock`   | boolean | Filtrar por disponibilidad                       |
+| `sort`      | string  | Campo de ordenación (`precio`, `nombre`, `anio`) |
+| `order`     | string  | Orden: `asc` o `desc`                            |
 
 ---
 
 ### Carrito
 
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| GET | `/carrito` | Obtener carrito del usuario | Sí |
-| POST | `/carrito/items` | Añadir producto al carrito | Sí |
-| PUT | `/carrito/items/:productoId` | Actualizar cantidad | Sí |
-| DELETE | `/carrito/items/:productoId` | Quitar producto | Sí |
-| DELETE | `/carrito` | Vaciar carrito | Sí |
+| Método | Endpoint                     | Descripción                 | Auth |
+| ------ | ---------------------------- | --------------------------- | ---- |
+| GET    | `/carrito`                   | Obtener carrito del usuario | Sí   |
+| POST   | `/carrito/items`             | Añadir producto al carrito  | Sí   |
+| PUT    | `/carrito/items/:productoId` | Actualizar cantidad         | Sí   |
+| DELETE | `/carrito/items/:productoId` | Quitar producto             | Sí   |
+| DELETE | `/carrito`                   | Vaciar carrito              | Sí   |
 
 **Body para POST /carrito/items:**
 
@@ -307,20 +313,21 @@ http://localhost:3000/api
 
 ### Pedidos
 
-| Método | Endpoint | Descripción | Auth |
-|--------|----------|-------------|------|
-| POST | `/pedidos` | Crear pedido | No |
-| POST | `/pedidos/checkout` | Finalizar compra | Sí |
-| GET | `/pedidos` | Listar pedidos (admin) | Admin |
-| GET | `/pedidos/mis-pedidos` | Mis pedidos (cliente) | Sí |
-| GET | `/pedidos/:id` | Obtener pedido por ID | Sí |
-| PUT | `/pedidos/:id` | Actualizar estado | Admin |
-| DELETE | `/pedidos/:id` | Eliminar pedido | Admin |
+| Método | Endpoint               | Descripción            | Auth  |
+| ------ | ---------------------- | ---------------------- | ----- |
+| POST   | `/pedidos`             | Crear pedido           | No    |
+| POST   | `/pedidos/checkout`    | Finalizar compra       | Sí    |
+| GET    | `/pedidos`             | Listar pedidos (admin) | Admin |
+| GET    | `/pedidos/mis-pedidos` | Mis pedidos (cliente)  | Sí    |
+| GET    | `/pedidos/:id`         | Obtener pedido por ID  | Sí    |
+| PUT    | `/pedidos/:id`         | Actualizar estado      | Admin |
+| DELETE | `/pedidos/:id`         | Eliminar pedido        | Admin |
 
 **Estados de pedido:**
+
 - `pendiente` - Pedido creado, esperando procesamiento
 - `procesando` - Pedido siendo preparado
-- `completed` - Pedido completado
+- `completado` - Pedido completado
 - `cancelado` - Pedido cancelado
 
 ---
@@ -331,10 +338,10 @@ http://localhost:3000/api
 
 La API utiliza JWT para autenticación stateless con dos tipos de tokens:
 
-| Token | Duración | Propósito |
-|-------|----------|-----------|
-| Access Token | 15 min | Acceso a recursos protegidos |
-| Refresh Token | 7 días | Renovar access token |
+| Token         | Duración | Propósito                    |
+| ------------- | -------- | ---------------------------- |
+| Access Token  | 15 min   | Acceso a recursos protegidos |
+| Refresh Token | 7 días   | Renovar access token         |
 
 ### Uso de Tokens
 
@@ -346,7 +353,7 @@ Authorization: Bearer <access_token>
 
 ### Flujo de Autenticación
 
-```
+```text
 1. Cliente → POST /usuarios/login
 2. Servidor valida credenciales con bcrypt
 3. Servidor genera access + refresh token
@@ -366,13 +373,14 @@ Authorization: Bearer <access_token>
 Middleware de autenticación JWT.
 
 ```javascript
-const auth = require('./middleware/auth');
+const auth = require("./middleware/auth");
 
 // Proteger ruta
-router.get('/ruta-protegida', auth.auth, controller.metodo);
+router.get("/ruta-protegida", auth.auth, controller.metodo);
 ```
 
 **Funciones:**
+
 - `auth.auth` - Verifica token JWT válido
 - `auth.obtenerUsuario` - Extrae usuario del token
 
@@ -381,16 +389,17 @@ router.get('/ruta-protegida', auth.auth, controller.metodo);
 Middleware de autorización por roles.
 
 ```javascript
-const role = require('./middleware/roleMiddle');
+const role = require("./middleware/roleMiddle");
 
 // Solo admin puede acceder
-router.delete('/productos/:id', auth.auth, role.soloAdmin, controller.metodo);
+router.delete("/productos/:id", auth.auth, role.soloAdmin, controller.metodo);
 
 // Validar rol específico
-router.get('/usuarios', auth.auth, role.validarRole, controller.metodo);
+router.get("/usuarios", auth.auth, role.validarRole, controller.metodo);
 ```
 
 **Funciones:**
+
 - `soloAdmin` - Solo permite acceso a usuarios con rol 'admin'
 - `validarRole` - Permite acceso a roles específicos
 
@@ -400,7 +409,7 @@ router.get('/usuarios', auth.auth, role.validarRole, controller.metodo);
 
 ### Flujo de Registro de Usuario
 
-```
+```text
 1. POST /api/usuarios/registrar
    Body: { name, email, password }
 
@@ -419,7 +428,7 @@ router.get('/usuarios', auth.auth, role.validarRole, controller.metodo);
 
 ### Flujo de Compra
 
-```
+```text
 1. GET /api/productos (usuario explora)
 2. POST /api/carrito/items (añade al carrito)
 3. POST /api/pedidos/checkout (finaliza compra)
@@ -437,16 +446,16 @@ router.get('/usuarios', auth.auth, role.validarRole, controller.metodo);
 
 ### Variables de Entorno
 
-| Variable | Descripción | Valor por defecto |
-|----------|-------------|-------------------|
-| `PORT` | Puerto del servidor | 3000 |
-| `MONGO_URI` | URI de conexión MongoDB | mongodb://localhost:27017/ecommerce_db |
-| `JWT_SECRET` | Clave secreta para access token | - |
-| `JWT_REFRESH_SECRET` | Clave secreta para refresh token | - |
-| `JWT_EXPIRES_IN` | Expiración access token | 15m |
-| `JWT_REFRESH_EXPIRES_IN` | Expiración refresh token | 7d |
-| `HASH_NUMBER` | Rounds para bcrypt | 10 |
-| `CORS_ORIGIN` | Origen permitido para CORS | http://localhost:5173 |
+| Variable                 | Descripción                      | Valor por defecto                        |
+| ------------------------ | -------------------------------- | ---------------------------------------- |
+| `PORT`                   | Puerto del servidor              | `3000`                                   |
+| `MONGO_URI`              | URI de conexión MongoDB          | `mongodb://localhost:27017/ecommerce_db` |
+| `JWT_SECRET`             | Clave secreta para access token  | -                                        |
+| `JWT_REFRESH_SECRET`     | Clave secreta para refresh token | -                                        |
+| `JWT_EXPIRES_IN`         | Expiración access token          | `15m`                                    |
+| `JWT_REFRESH_EXPIRES_IN` | Expiración refresh token         | `7d`                                     |
+| `HASH_NUMBER`            | Rounds para bcrypt               | `10`                                     |
+| `CORS_ORIGIN`            | Origen permitido para CORS       | `http://localhost:5173`                  |
 
 ---
 
@@ -454,10 +463,10 @@ router.get('/usuarios', auth.auth, role.validarRole, controller.metodo);
 
 ### Scripts Disponibles
 
-| Comando | Descripción |
-|---------|-------------|
-| `npm run dev` | Iniciar en modo desarrollo (nodemon) |
-| `npm start` | Iniciar en modo producción |
+| Comando        | Descripción                                  |
+| -------------- | -------------------------------------------- |
+| `npm run dev`  | Iniciar en modo desarrollo (`nodemon`)       |
+| `npm start`    | Iniciar en modo producción                   |
 | `npm run seed` | Poblar base de datos con productos de prueba |
 
 ### Semillas de Datos
@@ -484,15 +493,15 @@ docker-compose down
 
 ## Códigos de Estado HTTP
 
-| Código | Significado |
-|--------|-------------|
-| 200 | OK - Solicitud exitosa |
-| 201 | Created - Recurso creado |
-| 400 | Bad Request - Datos inválidos |
-| 401 | Unauthorized - Sin autenticación |
-| 403 | Forbidden - Sin permisos |
-| 404 | Not Found - Recurso no encontrado |
-| 500 | Internal Server Error - Error del servidor |
+| Código | Significado                                |
+| ------ | ------------------------------------------ |
+| 200    | OK - Solicitud exitosa                     |
+| 201    | Created - Recurso creado                   |
+| 400    | Bad Request - Datos inválidos              |
+| 401    | Unauthorized - Sin autenticación           |
+| 403    | Forbidden - Sin permisos                   |
+| 404    | Not Found - Recurso no encontrado          |
+| 500    | Internal Server Error - Error del servidor |
 
 ---
 
@@ -508,12 +517,12 @@ docker-compose down
 
 ### Errores Comunes
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `jwt malformed` | Token malformado | Login de nuevo |
-| `Token expired` | Token expirado | Usar refresh token |
+| Error                | Causa                 | Solución           |
+| -------------------- | --------------------- | ------------------ |
+| `jwt malformed`      | Token malformado      | Login de nuevo     |
+| `Token expired`      | Token expirado        | Usar refresh token |
 | `Connection refused` | MongoDB no disponible | Verificar conexión |
-| `E11000` | Campo único duplicado | Cambiar valor |
+| `E11000`             | Campo único duplicado | Cambiar valor      |
 
 ---
 
@@ -551,4 +560,4 @@ curl http://localhost:3000/api/productos
 
 ---
 
-*Última actualización: Marzo 2026*
+Última actualización: Marzo 2026

@@ -4,7 +4,7 @@
 
 Las rutas protegidas requieren el header:
 
-```JS
+```http
 Authorization: Bearer <token>
 ```
 
@@ -16,7 +16,7 @@ El token se obtiene en `POST /usuarios/login` o `POST /usuarios/registrar`.
 
 ### Registrar usuario
 
-```JS
+```http
 POST /api/usuarios/registrar
 ```
 
@@ -47,7 +47,7 @@ POST /api/usuarios/registrar
 
 ### Iniciar sesión
 
-```js
+```http
 POST /api/usuarios/login
 ```
 
@@ -83,13 +83,13 @@ POST /api/usuarios/login
 
 ### Renovar token
 
-```js
+```http
 POST /api/usuarios/refresh
 ```
 
 **Body:**
 
-```JSON
+```json
 {
   "refreshToken": "<refresh_token>"
 }
@@ -101,10 +101,8 @@ POST /api/usuarios/refresh
 
 ### Obtener todos los productos
 
-```Js
-
+```http
 GET /api/productos
-
 ```
 
 Admite filtros por query string: `?modelo=Air&anio=2021&condicion=A`
@@ -122,8 +120,7 @@ Admite filtros por query string: `?modelo=Air&anio=2021&condicion=A`
 
 ### Obtener producto por ID
 
-```JS
-
+```http
 GET /api/productos/:id
 ```
 
@@ -152,10 +149,8 @@ GET /api/productos/:id
 
 ### Crear producto
 
-```Js
-
+```http
 POST /api/productos
-
 ```
 
 **Body:**
@@ -192,7 +187,7 @@ Valores válidos:
 
 ### Actualizar producto
 
-```JS
+```http
 PUT /api/productos/:id
 ```
 
@@ -212,7 +207,7 @@ PUT /api/productos/:id
 
 ### Eliminar producto — 🔒 Solo admin
 
-```JS
+```http
 DELETE /api/productos/:id
 ```
 
@@ -232,13 +227,13 @@ Todas las rutas requieren `Authorization: Bearer <token>`. El carrito es por usu
 
 ### Ver carrito
 
-```JS
+```http
 GET /api/carrito
 ```
 
 **Respuesta `200`:**
 
-```JSON
+```json
 {
   "items": [
     { "productoId": "<id>", "cantidad": 2 }
@@ -250,7 +245,7 @@ GET /api/carrito
 
 ### Agregar item
 
-```js
+```http
 POST /api/carrito/items
 ```
 
@@ -264,7 +259,7 @@ POST /api/carrito/items
 
 ### Quitar item
 
-```JS
+```http
 DELETE /api/carrito/items/:productoId
 ```
 
@@ -272,7 +267,7 @@ DELETE /api/carrito/items/:productoId
 
 ### Vaciar carrito
 
-```JS
+```http
 DELETE /api/carrito
 ```
 
@@ -282,7 +277,7 @@ DELETE /api/carrito
 
 ### Obtener todos los pedidos
 
-```JS
+```http
 GET /api/pedidos
 ```
 
@@ -290,7 +285,7 @@ GET /api/pedidos
 
 ### Mis pedidos — 🔒 Requiere autenticación
 
-```JS
+```http
 GET /api/pedidos/mis-pedidos
 ```
 
@@ -302,7 +297,7 @@ GET /api/pedidos/mis-pedidos
 
 Convierte el carrito activo en un pedido.
 
-```JS
+```http
 POST /api/pedidos/checkout
 ```
 
@@ -323,7 +318,7 @@ POST /api/pedidos/checkout
 
 ### Crear pedido manualmente
 
-```JS
+```http
 POST /api/pedidos
 ```
 
@@ -342,7 +337,7 @@ POST /api/pedidos
 
 ### Actualizar pedido
 
-```JS
+```http
 PUT /api/pedidos/:id
 ```
 
@@ -352,7 +347,7 @@ PUT /api/pedidos/:id
 
 ### Eliminar pedido
 
-```JS
+```http
 DELETE /api/pedidos/:id
 ```
 
@@ -360,13 +355,13 @@ DELETE /api/pedidos/:id
 
 ## Códigos de respuesta
 
-| Código | Significado                  |
-|--------|-------------                 |
-| `200`  | OK                           |
-| `201`  | Creado                       |
-| `400`  | Datos inválidos              |
-| `401`  | Token ausente o inválido     |
-| `403`  | Sin permisos suficientes     |
-| `404`  | Recurso no encontrado        |
-| `409`  | Conflicto                    |
-| `500`  | Error interno del servidor   |
+| Código | Significado               |
+|--------|---------------------------|
+| `200`  | OK                        |
+| `201`  | Creado                    |
+| `400`  | Datos inválidos           |
+| `401`  | Token ausente o inválido  |
+| `403`  | Sin permisos suficientes  |
+| `404`  | Recurso no encontrado     |
+| `409`  | Conflicto                 |
+| `500`  | Error interno del servidor|
