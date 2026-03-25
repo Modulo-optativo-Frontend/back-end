@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Producto = require("../models/Producto.js");
+const { buildId } = require("../data/seedProductos");
 
 function escaparTextoParaRegex(texto) {
 	return texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -31,7 +32,7 @@ async function buscarProductoPorIdentificador(identificador) {
 		if (productoPorMongoId) return productoPorMongoId;
 	}
 
-	// Si no se encuentra por _id, probamos por idAlfaNumerico.
+	// Si no se encuentra por _id, probamos por el identificador legible del producto.
 	return Producto.findOne({ idAlfaNumerico: identificador });
 }
 
@@ -94,8 +95,35 @@ const obtenerProductoPorId = async (id) => {
 };
 
 const actualizarProducto = async (id, datosActualizados) => {
+	const consulta = mongoose.Types.ObjectId.isValid(id)
+		? { _id: id }
+		: { idAlfaNumerico: id };
+
+	const productoActual = await Producto.findOne(consulta);
+
+	if (!productoActual) {
+		return null;
+	}
+
+	const productoReconstruido = {
+		nombre: datosActualizados.nombre ?? productoActual.nombre,
+		modelo: datosActualizados.modelo ?? productoActual.modelo,
+		anio: datosActualizados.anio ?? productoActual.anio,
+		chip: datosActualizados.chip ?? productoActual.chip,
+		memoriaRamGb:
+			datosActualizados.memoriaRamGb ?? productoActual.memoriaRamGb,
+		almacenamientoGb:
+			datosActualizados.almacenamientoGb ?? productoActual.almacenamientoGb,
+		condicion: datosActualizados.condicion ?? productoActual.condicion,
+	};
+
+	const payloadActualizado = {
+		...datosActualizados,
+		idAlfaNumerico: buildId(productoReconstruido),
+	};
+
 	if (mongoose.Types.ObjectId.isValid(id)) {
-		return Producto.findByIdAndUpdate(id, datosActualizados, {
+		return Producto.findByIdAndUpdate(id, payloadActualizado, {
 			new: true,
 			runValidators: true,
 		});
@@ -103,7 +131,7 @@ const actualizarProducto = async (id, datosActualizados) => {
 
 	return Producto.findOneAndUpdate(
 		{ idAlfaNumerico: id },
-		datosActualizados,
+		payloadActualizado,
 		{ new: true, runValidators: true }
 	);
 };

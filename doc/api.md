@@ -124,6 +124,9 @@ Admite filtros por query string: `?modelo=Air&anio=2021&condicion=A`
 GET /api/productos/:id
 ```
 
+`id` puede ser el `ObjectId` de MongoDB o el `idAlfaNumerico` generado desde las
+especificaciones del producto.
+
 **Respuesta `200`:**
 
 ```json
@@ -131,9 +134,11 @@ GET /api/productos/:id
   "status": "success",
   "data": {
     "_id": "<id>",
+    "idAlfaNumerico": "AIR2020M1080256A",
+    "codigoSku": "MBAIR-M1-2020-8-256-A",
     "nombre": "MacBook Air",
     "modelo": "Air",
-    "anio": 2021,
+    "anio": 2020,
     "chip": "Apple M1",
     "memoriaRamGb": 8,
     "almacenamientoGb": 256,
@@ -190,6 +195,8 @@ Valores válidos:
 ```http
 PUT /api/productos/:id
 ```
+
+También admite `ObjectId` o `idAlfaNumerico`.
 
 **Body:** Solo los campos a modificar.
 

@@ -17,11 +17,7 @@ async function seed() {
 		// Añade idAlfaNumerico antes de guardar.
 		const productoFinal = {
 			...productoBase,
-			idAlfaNumerico: buildId(
-				productoBase.nombre,
-				productoBase.anio,
-				productoBase.codigoSku
-			),
+			idAlfaNumerico: buildId(productoBase),
 		};
 
 		await Producto.findOneAndUpdate(

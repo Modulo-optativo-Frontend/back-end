@@ -114,7 +114,7 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 
 ```javascript
 {
-  idAlfaNumerico: String,    // ID generado: 3 letras nombre + año (ej: MAC2023)
+  idAlfaNumerico: String,    // ID alfanumérico único derivado de modelo + año + chip + RAM + almacenamiento + condición (ej: AIR2020M1080256A)
   codigoSku: String,         // Código SKU único
   nombre: String,            // Nombre del producto
   precio: Number,           // Precio (mín 0)
@@ -135,6 +135,7 @@ API RESTful para plataforma de e-commerce **Silverline**, desarrollada con Node.
 **Características especiales**:
 
 - Generación automática de `idAlfaNumerico` mediante hook `pre-save`
+  a partir de `modelo`, `anio`, `chip`, `memoriaRamGb`, `almacenamientoGb` y `condicion`
 - Índices compuestos en `modelo + anio` y `chip + anio`
 - Validación de enums para specs técnicas
 

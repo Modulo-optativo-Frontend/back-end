@@ -2,8 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./docs/swagger");
 
 const conectarBaseDeDatos = require("./config/db");
+const { seedDatabase } = require("./utils/seedDatabase");
 
 const app = express();
 
@@ -22,6 +25,7 @@ app.get("/", (req, res) => {
 	res.sendFile(__dirname + "/index.html");
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/productos", rutasProductos);
 app.use("/api/usuarios", rutasUsuarios);
 app.use("/api/carrito", rutasCarrito);
@@ -30,9 +34,8 @@ app.use("/api/pedidos", rutasPedidos);
 const PORT = process.env.PORT || 3000;
 
 async function iniciarServidor() {
-	
-	// Primero conectamos con la base de datos.
 	await conectarBaseDeDatos();
+	await seedDatabase();
 
 	app.listen(PORT, () => {
 		console.log(`Servidor escuchando en el puerto ${PORT}`);

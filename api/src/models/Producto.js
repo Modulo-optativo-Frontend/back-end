@@ -1,5 +1,6 @@
 // Importar mongoose para crear esquemas y modelos
 const mongoose = require("mongoose");
+const { buildId } = require("../data/seedProductos");
 
 // Crear esquema de producto con sus propiedades y validaciones
 const esquemaProducto = new mongoose.Schema({
@@ -24,9 +25,10 @@ esquemaProducto.index({ modelo: 1, anio: -1 });
 esquemaProducto.index({ chip: 1, anio: -1 });
 
 /*
-	Middleware pre-save para generar automáticamente un ID alfanumérico.
-	Este ID se compone por las tres primeras letras del nombre (en mayúsculas)
-	y el año del producto. Ejemplo: "MacBook", 2021 -> "MAC2021".
+	Middleware pre-save para generar automáticamente un identificador legible
+	y único derivado de las especificaciones del producto.
+	Ejemplo: modelo "Air", anio 2020, chip "M1", RAM 8, almacenamiento 256,
+	condicion "A" -> "AIR2020M1080256A".
 */
 
 esquemaProducto.pre("save", function (next) {
@@ -34,17 +36,23 @@ esquemaProducto.pre("save", function (next) {
 
 	// Comprobar si se debe generar o actualizar el ID alfanumérico
 	const idNoExiste = !producto.idAlfaNumerico;
-	const nombreModificado = producto.isModified("nombre");
+	const modeloModificado = producto.isModified("modelo");
 	const anioModificado = producto.isModified("anio");
+	const chipModificado = producto.isModified("chip");
+	const ramModificada = producto.isModified("memoriaRamGb");
+	const almacenamientoModificado = producto.isModified("almacenamientoGb");
+	const condicionModificada = producto.isModified("condicion");
 
-	if (idNoExiste || nombreModificado || anioModificado) {
-		const nombreEnMayusculas = producto.nombre.substring(0, 3).toUpperCase();
-
-		const anioComoTexto = producto.anio ? producto.anio.toString() : "0000";
-
-		const idGenerado = `${nombreEnMayusculas}${anioComoTexto}`;
-
-		producto.idAlfaNumerico = idGenerado;
+	if (
+		idNoExiste ||
+		modeloModificado ||
+		anioModificado ||
+		chipModificado ||
+		ramModificada ||
+		almacenamientoModificado ||
+		condicionModificada
+	) {
+		producto.idAlfaNumerico = buildId(producto);
 	}
 
 	next();

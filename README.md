@@ -29,7 +29,7 @@
 - ✅ **Validación de datos** mediante esquemas de Mongoose
 - ✅ **Arquitectura en capas** (Rutas → Controladores → Servicios → Modelos)
 - ✅ **Middleware de autenticación** para rutas protegidas
-- ✅ **Generación automática** de IDs alfanuméricos para productos
+- ✅ **Generación automática** de identificadores legibles únicos para productos
 - ✅ **Índices optimizados** para consultas eficientes en MongoDB
 
 ## Stack Tecnológico
@@ -240,8 +240,9 @@ Cliente → Rutas → Controladores → Servicios → Modelos → MongoDB
     type: String,
     required: true,
     unique: true
-    // Generado automáticamente: primeras 3 letras del nombre + año
-    // Ejemplo: MacBook 2023 → "MAC2023"
+    // Generado automáticamente a partir de modelo + año + chip + RAM + almacenamiento + condición
+    // Ejemplo: Air 2020 + M1 + 8GB + 256GB + A
+    // -> "AIR2020M1080256A"
   },
   codigoSku: {
     type: String,
@@ -296,6 +297,7 @@ Cliente → Rutas → Controladores → Servicios → Modelos → MongoDB
 **Características especiales:**
 
 - Generación automática de `idAlfaNumerico` mediante hook `pre-save`
+  a partir de `modelo`, `anio`, `chip`, `memoriaRamGb`, `almacenamientoGb` y `condicion`
 - Índices compuestos en `modelo + anio` y `chip + anio`
 - Validación de enums para specs técnicas
 

@@ -262,12 +262,34 @@ const macbooks = [
 	},
 ];
 
-const buildId = (nombreProducto, anioProducto, codigoSku = "") => {
-	const prefijoNombre = (nombreProducto || "MAC").substring(0, 3).toUpperCase();
-	const anioEnTexto = anioProducto ? String(anioProducto) : "0000";
-	const skuLimpio = String(codigoSku).replace(/[^A-Z0-9]/gi, "").toUpperCase();
-	const sufijoSku = skuLimpio ? skuLimpio.slice(-6) : "000000";
-	return `${prefijoNombre}${anioEnTexto}-${sufijoSku}`;
+function normalizarModelo(modelo = "") {
+	return String(modelo)
+		.toUpperCase()
+		.replace(/[^A-Z0-9]/g, "");
+}
+
+function normalizarChip(chip = "") {
+	return String(chip)
+		.toUpperCase()
+		.replace(/^INTEL\s+/i, "")
+		.replace(/[^A-Z0-9]/g, "");
+}
+
+function completarNumero(valor, longitud) {
+	return String(valor || 0).padStart(longitud, "0");
+}
+
+const buildId = (producto = {}) => {
+	const modelo = normalizarModelo(producto.modelo || producto.nombre || "MAC");
+	const anio = producto.anio ? String(producto.anio) : "0000";
+	const chip = normalizarChip(producto.chip || "GEN");
+	const ram = completarNumero(producto.memoriaRamGb, 2);
+	const almacenamiento = completarNumero(producto.almacenamientoGb, 4);
+	const condicion = String(producto.condicion || "A")
+		.toUpperCase()
+		.replace(/[^A-Z0-9]/g, "") || "A";
+
+	return `${modelo}${anio}${chip}${ram}${almacenamiento}${condicion}`;
 };
 
 module.exports = { macbooks, buildId };

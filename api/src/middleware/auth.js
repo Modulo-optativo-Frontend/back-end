@@ -1,3 +1,27 @@
+/**
+ * @swagger
+ * /api/auth/login:
+ * post:
+ * summary: Login d'usuari
+ * tags: [Auth]
+ * requestBody:
+ * required: true
+ * content:
+ * application/json:
+ * schema:
+ * type: object
+ * properties:
+ * email:
+ * type: string
+ * password:
+ * type: string
+ * responses:
+ * 200:
+ * description: Login correcte
+ * 401:
+ * description: Credencials incorrectes
+ */
+
 const process = require("process");
 const jwt = require("jsonwebtoken");
 
