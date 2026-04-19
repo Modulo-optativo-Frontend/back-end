@@ -75,7 +75,11 @@ const roles = require("../middleware/roleMiddle.js");
  *         name: orden
  *         schema:
  *           type: string
- *           enum: [precioAsc, precioDesc, anioAsc, anioDesc, nombreAsc, nombreDesc]
+ *           enum: [precioAsc, 
+ * 					precioDesc, 
+ * 					anioAsc, anioDesc, 
+ * 					nombreAsc, 	
+ * 					nombreDesc]
  *         description: Ordenacion disponible
  *     responses:
  *       200:
