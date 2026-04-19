@@ -12,21 +12,21 @@ const pedidoItemSchema = new mongoose.Schema(
 			required: true,
 			min: 1,
 		},
-	
+
 		precioUnitario: {
 			type: Number,
 			required: true,
 			min: 0,
 		},
 	},
-	{ _id: false }
+	{ _id: false },
 );
 
 const pedidoSchema = new mongoose.Schema(
 	{
 		usuario: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "User", 
+			ref: "User",
 			required: true,
 		},
 
@@ -55,8 +55,13 @@ const pedidoSchema = new mongoose.Schema(
 			type: Date,
 			default: Date.now,
 		},
+
+		stripeSessionId: {
+			type: String,
+			default: null,
+		},
 	},
-	{ timestamps: true }
+	{ timestamps: true },
 );
 
 const Pedido = mongoose.model("Pedido", pedidoSchema);

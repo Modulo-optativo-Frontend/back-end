@@ -4,6 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
+const rutasCheckout = require("./routes/checkoutRoutes.js");
 
 const conectarBaseDeDatos = require("./config/db");
 const { seedDatabase } = require("./utils/seedDatabase");
@@ -12,6 +13,8 @@ const app = express();
 
 const origenPermitido = process.env.CORS_ORIGIN || "http://localhost:5173";
 app.use(cors({ origin: origenPermitido }));
+app.use("/api/checkout", rutasCheckout);
+
 app.use(express.json());
 app.use("/images/macbooks", express.static(path.join(__dirname, "data")));
 
