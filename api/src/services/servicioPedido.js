@@ -75,7 +75,7 @@ const checkout = async (userId, stripeSessionId = null) => {
 			usuario: userId,
 			items: itemsPedido,
 			total,
-			estado: "pendiente",
+			estado: "pagado",
 			stripeSessionId,
 		});
 	} catch (err) {

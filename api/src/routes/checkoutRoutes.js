@@ -157,10 +157,12 @@ router.post(
 		if (event.type === "checkout.session.completed") {
 			const session = event.data.object;
 			const userId = session.metadata?.userId;
+			console.log(userId);
+			console.log(session.metadata ?? "No hay metadatos");
 			if (userId) {
-				// Aquí se crea el pedido, se marca el stock y se vacía el carrito
+				// Crear el pedido, marcar el stock y vaciar el carrito
 				try {
-					await pedidoServicio.checkout(userId);
+					await pedidoServicio.checkout(userId, session.id);
 				} catch (err) {
 					// Logueamos pero respondemos 200 para que Stripe no reintente indefinidamente
 					console.error("Error en checkout webhook:", err.message);
