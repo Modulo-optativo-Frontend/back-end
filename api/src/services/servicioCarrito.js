@@ -42,16 +42,21 @@ async function addItem(usuarioId, productoId) {
 	if (!productoExiste) {
 		throw crearError("Producto no encontrado", 404);
 	}
+	if (!productoExiste.enStock) {
+		throw crearError("Producto no disponible: ya ha sido vendido", 409);
+	}
 
 	const carrito = await getCarritoByUserId(usuarioId);
 
 	const idx = carrito.items.findIndex(
-		(it) =>
-			String(it.producto?._id || it.producto) === String(productoId),
+		(it) => String(it.producto?._id || it.producto) === String(productoId),
 	);
 
-	if (idx >= 0) carrito.items[idx].cantidad += 1;
-	else carrito.items.push({ producto: productoId, cantidad: 1 });
+	if (idx >= 0) {
+		// Producto único (enStock booleano): no permite más de 1 unidad
+		return await carrito.populate("items.producto");
+	}
+	carrito.items.push({ producto: productoId, cantidad: 1 });
 
 	await carrito.save();
 	return await carrito.populate("items.producto");
@@ -69,8 +74,7 @@ async function removeItem(usuarioId, productoId) {
 	const carrito = await getCarritoByUserId(usuarioId);
 
 	const idx = carrito.items.findIndex(
-		(it) =>
-			String(it.producto?._id || it.producto) === String(productoId),
+		(it) => String(it.producto?._id || it.producto) === String(productoId),
 	);
 
 	if (idx === -1) return await carrito.populate("items.producto");

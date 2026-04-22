@@ -12,7 +12,7 @@ async function seedProductos() {
 		await Producto.findOneAndUpdate(
 			{ codigoSku: productoBase.codigoSku },
 			productoFinal,
-			{ upsert: true, new: true, runValidators: true }
+			{ upsert: true, new: true, runValidators: true },
 		);
 	}
 
@@ -26,7 +26,7 @@ async function ensureAdminUser() {
 
 	if (!emailAdmin || !passwordAdmin) {
 		console.log(
-			"Seed de admin omitido: faltan ADMIN_EMAIL o ADMIN_PASSWORD en el .env"
+			"Seed de admin omitido: faltan ADMIN_EMAIL o ADMIN_PASSWORD en el .env",
 		);
 		return;
 	}
@@ -50,10 +50,12 @@ async function ensureAdminUser() {
 		return;
 	}
 
-	usuario.name = nombreAdmin;
-	usuario.role = "admin";
-	usuario.password = passwordAdmin;
-	await usuario.save();
+	// Solo actualizar name y role, nunca la contraseña en caliente
+	// (evita re-hashear en cada reinicio del servidor)
+	await Usuario.updateOne(
+		{ email: emailAdmin },
+		{ $set: { name: nombreAdmin, role: "admin" } },
+	);
 	console.log(`Admin habilitado/actualizado: ${emailAdmin}`);
 }
 

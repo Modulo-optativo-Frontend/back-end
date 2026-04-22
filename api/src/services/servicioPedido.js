@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Carrito = require("../models/Carrito");
 const Pedido = require("../models/Pedido");
 const Producto = require("../models/Producto");
@@ -71,8 +72,11 @@ const checkout = async (userId, stripeSessionId = null) => {
 
 	let pedido;
 	try {
+		const usuarioId = mongoose.Types.ObjectId.isValid(userId)
+			? new mongoose.Types.ObjectId(userId)
+			: userId;
 		pedido = await Pedido.create({
-			usuario: userId,
+			usuario: usuarioId,
 			items: itemsPedido,
 			total,
 			estado: "pagado",
@@ -95,7 +99,13 @@ const checkout = async (userId, stripeSessionId = null) => {
 };
 
 const obtenerPedidosPorUser = async (userId) => {
-	return await Pedido.find({ usuario: userId })
+	// Buscar por string Y por ObjectId para cubrir datos históricos guardados
+	// con formato incorrecto (string en lugar de ObjectId)
+	const condiciones = [{ usuario: userId }];
+	if (mongoose.Types.ObjectId.isValid(userId)) {
+		condiciones.push({ usuario: new mongoose.Types.ObjectId(userId) });
+	}
+	return await Pedido.find({ $or: condiciones })
 		.populate("items.producto", "nombre precio imagenes modelo anio")
 		.sort({ createdAt: -1 });
 };
