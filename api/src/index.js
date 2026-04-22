@@ -35,6 +35,9 @@ app.use("/api/carrito", rutasCarrito);
 app.use("/api/pedidos", rutasPedidos);
 
 const PORT = process.env.PORT || 3000;
+if (!PORT) {
+	throw new Error("Hay un error al leer a variable PORT");
+}
 
 async function iniciarServidor() {
 	await conectarBaseDeDatos();

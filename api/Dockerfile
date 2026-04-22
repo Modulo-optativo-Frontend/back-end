@@ -1,7 +1,12 @@
-FROM node:22-alpine
+FROM node:22-alpine as builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
+
+FROM node:22-alpine as dev
+WORKDIR /app
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY . .
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
 
@@ -12,5 +17,4 @@ CMD ["npm", "run", "dev"]
 # 4️⃣ Instalamos las dependencias del proyecto
 # 5️⃣ Copiamos el resto del código de la aplicación
 # 6️⃣ Exponemos el puerto 3000
-
 # 7️⃣ Comando por defecto para iniciar la API
