@@ -1,20 +1,63 @@
-FROM node:22-alpine as builder
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
+# =========================
+# 1. BASE
+# =========================
+FROM node:22-alpine AS base
 
-FROM node:22-alpine as dev
 WORKDIR /app
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+COPY package*.json ./
+
+
+# =========================
+# 2. DEPENDENCIES FOR DEVELOPMENT
+# =========================
+FROM base AS deps-dev
+
+RUN npm ci
+
+
+# =========================
+# 3. DEVELOPMENT
+# =========================
+FROM node:22-alpine AS dev
+
+WORKDIR /app
+
+ENV NODE_ENV=development
+
+COPY --from=deps-dev /app/node_modules ./node_modules
+
 COPY . .
+
 EXPOSE 3000
+
 CMD ["npm", "run", "dev"]
 
 
-# 1️⃣ Imagen base oficial de Node.js (usa una versión estable LTS)
-# 2️⃣ Directorio de trabajo dentro del contenedor
-# 3️⃣ Copiamos los archivos de dependencias primero (para aprovechar la caché de Docker)
-# 4️⃣ Instalamos las dependencias del proyecto
-# 5️⃣ Copiamos el resto del código de la aplicación
-# 6️⃣ Exponemos el puerto 3000
-# 7️⃣ Comando por defecto para iniciar la API
+# =========================
+# 4. DEPENDENCIES FOR PRODUCTION
+# =========================
+FROM base AS deps-prod
+
+ENV NODE_ENV=production
+
+RUN npm ci --omit=dev
+
+
+# =========================
+# 5. PRODUCTION
+# =========================
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY --from=deps-prod --chown=node:node /app/node_modules ./node_modules
+COPY --chown=node:node . .
+
+USER node
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
