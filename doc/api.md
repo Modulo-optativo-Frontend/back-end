@@ -12,6 +12,44 @@ El token se obtiene en `POST /usuarios/login` o `POST /usuarios/registrar`.
 
 ---
 
+## Observabilidad
+
+Todas las respuestas incluyen la cabecera `X-Request-Id`. Si el cliente envia
+`X-Request-Id`, el backend reutiliza ese valor; si no, genera uno nuevo. Las
+respuestas de error incluyen tambien `requestId` en el cuerpo para poder buscar
+la misma peticion en los logs estructurados.
+
+```http
+GET /api/health
+```
+
+Endpoint publico de salud. Devuelve `status`, `uptime`, `timestamp` y el estado
+de conexion con MongoDB.
+
+```http
+GET /api/metrics
+Authorization: Bearer <token_admin>
+```
+
+Endpoint protegido para administradores. Devuelve metricas basicas de proceso:
+memoria, CPU, version de Node, entorno y `uptime`. No expone variables de
+entorno ni secretos.
+
+### Incidencias observables
+
+Para investigar una incidencia:
+
+1. Pedir al cliente el `requestId` recibido en el cuerpo del error o en la
+   cabecera `X-Request-Id`.
+2. Buscar ese `requestId` en los logs del backend.
+3. Revisar `method`, `url`, `statusCode`, `responseTime`, `userId` y el mensaje
+   de error asociado.
+
+No se registran contrasenas, JWT, refresh tokens, tarjetas, CVC, claves de
+Stripe ni secretos de entorno.
+
+---
+
 ## Autenticación (`/api/usuarios`)
 
 ### Registrar usuario

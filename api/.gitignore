@@ -1,2 +1,26 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment files
 .env
-node_modules
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime and build output
+coverage/
+dist/
+build/
+.cache/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

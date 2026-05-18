@@ -86,10 +86,26 @@ const registrarUsuario = async (req, res) => {
 		const token = resultado.token;
 		const refreshToken = resultado.refreshToken;
 
+		req.log.info(
+			{
+				userId: resultado.usuario.id,
+				email: resultado.usuario.email,
+			},
+			"User registered successfully",
+		);
+
 		res
 			.status(201)
 			.json({ status: "success", data: { nombre, token, refreshToken } });
 	} catch (error) {
+		req.log.warn(
+			{
+				email: req.body?.email,
+				error: error.message,
+			},
+			"User registration failed",
+		);
+
 		if (error.code === 11000) {
 			res.status(409).json({ status: "Error", message: error.message });
 			return;
@@ -115,10 +131,27 @@ const loginUsuario = async (req, res) => {
 			req.body
 		);
 
+		req.log.info(
+			{
+				userId: usuario.id,
+				email: usuario.email,
+			},
+			"User logged in successfully",
+		);
+
 		res
 			.status(200)
 			.json({ status: "Success", data: { usuario, token, refreshToken } });
 	} catch (error) {
+		req.log.warn(
+			{
+				email: req.body?.email,
+				statusCode: error.statusCode || 500,
+				error: error.message,
+			},
+			"Invalid login attempt",
+		);
+
 		if (error.name === "ValidationError") {
 			res.status(400).json({ status: "Error", message: error.message });
 			return;
@@ -133,14 +166,29 @@ const loginUsuario = async (req, res) => {
 const refresh = async (req, res) => {
 	const refreshToken = req.body.refreshToken;
 	if (!refreshToken) {
+		req.log.warn("Refresh token missing");
 		return res
 			.status(400)
 			.json({ status: "Error", message: "refresh Token requerido" });
 	}
 	try {
 		const resultado = await usuarioServicio.renovarToken(refreshToken);
+		req.log.info(
+			{
+				userId: resultado.usuario.id,
+				email: resultado.usuario.email,
+			},
+			"Access token refreshed",
+		);
 		res.status(200).json({ status: "success", data: resultado });
 	} catch (error) {
+		req.log.warn(
+			{
+				statusCode: error.statusCode || 500,
+				error: error.message,
+			},
+			"Refresh token rejected",
+		);
 		return res
 			.status(error.statusCode || 500)
 			.json({ status: "Error", message: error.message });

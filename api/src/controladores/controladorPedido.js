@@ -85,6 +85,15 @@ const checkout = async (req, res) => {
 		// Si el service NO usa body, no lo pases.
 		const pedido = await pedidoServicio.checkout(userId);
 
+		req.log.info(
+			{
+				userId,
+				orderId: pedido._id,
+				total: pedido.total,
+			},
+			"Order created from checkout",
+		);
+
 		return res.status(201).json({
 			ok: true,
 			orderId: pedido._id,
@@ -94,6 +103,15 @@ const checkout = async (req, res) => {
 	} catch (error) {
 		// Si tu service lanza HttpError con status, úsalo.
 		const status = error.status || 400;
+
+		req.log.error(
+			{
+				userId: req.user?.id,
+				statusCode: status,
+				error: error.message,
+			},
+			"Checkout failed",
+		);
 
 		return res.status(status).json({
 			ok: false,

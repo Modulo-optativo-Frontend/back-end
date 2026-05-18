@@ -50,30 +50,44 @@ const Carrito = require("../models/Carrito.js");
 router.post("/create-session", auth, async (req, res) => {
 	try {
 		const userId = req.user?.id;
-		if (!userId)
+		if (!userId) {
+			req.log.warn("Checkout session requested without authenticated user");
 			return res.status(401).json({ ok: false, message: "No autenticado" });
+		}
 
 		// Leer carrito sin modificar nada
 		const carrito = await Carrito.findOne({ usuario: userId }).populate(
 			"items.producto",
 		);
 
-		if (!carrito || !carrito.items?.length)
+		if (!carrito || !carrito.items?.length) {
+			req.log.warn({ userId }, "Checkout session rejected for empty cart");
 			return res
 				.status(400)
 				.json({ ok: false, message: "El carrito está vacío" });
+		}
 
 		// Validar stock antes de enviar a Stripe
 		for (const item of carrito.items) {
-			if (!item.producto)
+			if (!item.producto) {
+				req.log.warn({ userId }, "Checkout session rejected for missing product");
 				return res
 					.status(409)
 					.json({ ok: false, message: "Uno de los productos ya no existe" });
-			if (!item.producto.enStock)
+			}
+			if (!item.producto.enStock) {
+				req.log.warn(
+					{
+						userId,
+						productId: item.producto._id,
+					},
+					"Checkout session rejected for unavailable product",
+				);
 				return res.status(409).json({
 					ok: false,
 					message: `"${item.producto.nombre}" ya no está disponible`,
 				});
+			}
 		}
 
 		// Construir line_items para Stripe (importes en céntimos)
@@ -96,9 +110,26 @@ router.post("/create-session", auth, async (req, res) => {
 			metadata: { userId: userId.toString() },
 		});
 
+		req.log.info(
+			{
+				userId,
+				stripeSessionId: session.id,
+				items: carrito.items.length,
+			},
+			"Stripe checkout session created",
+		);
+
 		return res.json({ ok: true, sessionId: session.id, url: session.url });
 	} catch (error) {
 		const status = error.status || 500;
+		req.log.error(
+			{
+				userId: req.user?.id,
+				statusCode: status,
+				error: error.message,
+			},
+			"Stripe checkout session failed",
+		);
 		return res.status(status).json({ ok: false, message: error.message });
 	}
 });
@@ -149,6 +180,12 @@ router.post(
 				process.env.STRIPE_WEBHOOK_SECRET,
 			);
 		} catch (err) {
+			req.log.warn(
+				{
+					error: err.message,
+				},
+				"Invalid Stripe webhook signature",
+			);
 			return res
 				.status(400)
 				.json({ message: `Webhook signature inválida: ${err.message}` });
@@ -157,15 +194,29 @@ router.post(
 		if (event.type === "checkout.session.completed") {
 			const session = event.data.object;
 			const userId = session.metadata?.userId;
-			console.log(userId);
-			console.log(session.metadata ?? "No hay metadatos");
 			if (userId) {
 				// Crear el pedido, marcar el stock y vaciar el carrito
 				try {
-					await pedidoServicio.checkout(userId, session.id);
+					const pedido = await pedidoServicio.checkout(userId, session.id);
+					req.log.info(
+						{
+							userId,
+							orderId: pedido._id,
+							total: pedido.total,
+							stripeSessionId: session.id,
+						},
+						"Payment confirmed and order created",
+					);
 				} catch (err) {
 					// Logueamos pero respondemos 200 para que Stripe no reintente indefinidamente
-					console.error("Error en checkout webhook:", err.message);
+					req.log.error(
+						{
+							userId,
+							stripeSessionId: session.id,
+							error: err.message,
+						},
+						"Payment confirmed but order creation failed",
+					);
 				}
 			}
 		}
