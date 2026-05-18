@@ -5,7 +5,9 @@ FROM node:22-alpine AS base
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml ./
 
 
 # =========================
@@ -13,7 +15,7 @@ COPY package*.json ./
 # =========================
 FROM base AS deps-dev
 
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 
 # =========================
@@ -41,7 +43,7 @@ FROM base AS deps-prod
 
 ENV NODE_ENV=production
 
-RUN npm ci --omit=dev
+RUN pnpm install --prod --frozen-lockfile
 
 
 # =========================
